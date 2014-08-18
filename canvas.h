@@ -3,6 +3,7 @@
 
 #include "effect.h"
 #include "grids.h"
+#include "palettes.h"
 
 #define CANVAS_WIDTH 25
 #define CANVAS_HEIGHT 25
@@ -11,7 +12,7 @@ class CanvasEffect : public Animation {
 
   protected:
     PaletteGridMap<CANVAS_WIDTH, CANVAS_HEIGHT, 255, 255> canvas;
-    uint8_t rotation;
+    uint8_t rotation = 0;
 
     // Set a pixel
     uint8_t& pixel(int x, int y) {

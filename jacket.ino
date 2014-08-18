@@ -18,7 +18,7 @@
 #define BRIGHTNESS  100
 
 // Sketches are tuned for this speed.  TODO: consistent framerate for sketches inside Animation class
-#define FRAMES_PER_SECOND 20
+#define FRAMES_PER_SECOND 18
 
 // The actual LEDs and their X/Y positions
 CRGB leds[NUM_LEDS];
@@ -143,9 +143,9 @@ void get_xy_jacket(int i, int *x, int *y) {
 
 
 // Current, previous animations and transition counter
-Animation *anim = new Plasma();
+Animation *anim;
 Animation *lastAnim;
-fract8 animTransition = 30;
+fract8 animTransition;
 
 
 void setup() { 
@@ -160,7 +160,7 @@ void setup() {
   FastLED.addLeds<CHIPSET, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalSMD5050 );
   set_max_power_in_volts_and_milliamps( 5, MAX_POWER);
   FastLED.setBrightness( BRIGHTNESS );
-  FastLED.setDither( true );
+  FastLED.setDither( false );
   
   // Precalc all posiitons
   for (int i = 0; i < NUM_LEDS; i++) {  
@@ -177,11 +177,9 @@ void setup() {
     Serial.println();
     */
   }
-
-  beginAnimation(new Plasma());
-  beginAnimation(new Fire());
 }
 
+#define TTIME 20000
 
 void loop() {
   unsigned long now = millis();
@@ -194,9 +192,32 @@ void loop() {
   if (lastAnim)
     lastAnim->loop(now);
   if (animTransition) {
-    animTransition--;
+    animTransition = qsub8(animTransition, 3);
     if (!animTransition)
       lastAnim = (Animation *)0;
+  }
+
+  // Transition if necessary 
+  // TODO: this bad code is here as placeholder until I can write something that's button reactive
+  static unsigned long xx = 0;
+  if (xx < 1 && millis() > 0) {
+    xx = 1;
+    beginAnimation(new Stripes());
+  } else if (xx < 2 && millis() > TTIME) {
+    xx = 2;
+    beginAnimation(new Plasma());
+  } else if (xx < 3 && millis() > TTIME*2) {
+    xx = 3;
+    beginAnimation(new Noise());
+  } else if (xx < 4 && millis() > TTIME*3) {
+    xx = 4;
+    beginAnimation(new Descent( true ));
+  } else if (xx < 5 && millis() > TTIME*4) {
+    xx = 5;
+    beginAnimation(new Fire());
+  } else if (xx < 6 && millis() > TTIME*5) {
+    xx = 6;
+    beginAnimation(new Plasma());
   }
 
   // Map from the virtual matrix to the actual LEDs, blending previous

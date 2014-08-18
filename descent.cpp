@@ -20,11 +20,9 @@ class Descent : public CanvasEffect {
             xx = (uint8_t)(row * 3 * 256 / width);
           else
             xx = (uint8_t)(col * 3 * 256 / height);
-          pixel(col, row) = xx + t;
+          pixel(col, row) = xx + t * 4;
         }
       }
-  
-      rotate(rotation++);    
     }
 
 };

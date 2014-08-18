@@ -6,7 +6,7 @@ class Plasma : public CanvasEffect {
     Plasma() : CanvasEffect() { }
   
     void start() {
-      setPalette( CloudColors_p ); 
+      setPalette( PartyColors_p ); 
     }
   
     void tick(unsigned long t) {
@@ -25,7 +25,7 @@ class Plasma : public CanvasEffect {
         }
       }
   
-      rotate(rotation++);    
+      rotate(rotation+1);    
     }
 
 };
