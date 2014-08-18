@@ -245,6 +245,8 @@ void beginAnimation(Animation *newAnim) {
   if (!lastAnim) {
     lastAnim = anim;
     animTransition = 255;
+  } else {
+    delete anim;
   }
 
   // Start up the new animation
