@@ -1,9 +1,9 @@
-#include "canvas.h"
+#include "effect.h"
 
-class Plasma : public CanvasEffect {
+class Plasma : public PaletteEffect {
 
   public:
-    Plasma() : CanvasEffect() { }
+    Plasma() : PaletteEffect() { }
   
     void start() {
       setPalette( PartyColors_p ); 

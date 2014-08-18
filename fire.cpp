@@ -1,4 +1,4 @@
-#include "canvas.h"
+#include "effect.h"
 
 // COOLING: How much does the air cool as it rises?
 // Less cooling = taller flames.  More cooling = shorter flames.
@@ -10,10 +10,10 @@
 // Default 120, suggested range 50-200.
 #define SPARKING 20
 
-class Fire : public CanvasEffect {
+class Fire : public PaletteEffect {
 
   public:
-    Fire() : CanvasEffect() { }
+    Fire() : PaletteEffect() { }
 
     void start() {
       setPalette( CRGBPalette16( CRGB::Black, CRGB::Red, CRGB::Red, CRGB::Orange ) ); 

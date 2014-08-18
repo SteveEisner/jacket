@@ -1,9 +1,9 @@
-#include "canvas.h"
+#include "effect.h"
 
-class Noise : public CanvasEffect {
+class Noise : public PaletteEffect {
 
   public:
-    Noise() : CanvasEffect() { }
+    Noise() : PaletteEffect() { }
     
     void start() override {
       setPalette( Bands_p ); //CRGBPalette16( CRGB::Black, CRGB::Red, CRGB::Black, CRGB::Green )); 

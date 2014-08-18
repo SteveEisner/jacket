@@ -1,11 +1,11 @@
 #include "canvas.h"
 
-class Descent : public CanvasEffect {
+class Descent : public PaletteEffect {
   protected:
     int vertical = false;
     
   public:
-    Descent(int vertical) : vertical(vertical), CanvasEffect() { }
+    Descent(int vertical) : vertical(vertical), PaletteEffect() { }
   
     void start() {
       setPalette( RainbowColors_p ); 

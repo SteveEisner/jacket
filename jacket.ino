@@ -160,7 +160,7 @@ void setup() {
   FastLED.addLeds<CHIPSET, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalSMD5050 );
   set_max_power_in_volts_and_milliamps( 5, MAX_POWER);
   FastLED.setBrightness( BRIGHTNESS );
-  FastLED.setDither( false );
+  FastLED.setDither( true );
   
   // Precalc all posiitons
   for (int i = 0; i < NUM_LEDS; i++) {  

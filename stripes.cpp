@@ -1,9 +1,9 @@
-#include "canvas.h"
+#include "effect.h"
 
-class Stripes : public CanvasEffect {
+class Stripes : public PaletteEffect {
 
   public:
-    Stripes() : CanvasEffect() { }
+    Stripes() : PaletteEffect() { }
     
     void start() override {
       setPalette( CRGBPalette16( CRGB::Black, CRGB::Red, CRGB::Black, CRGB::Green )); 

@@ -1,15 +1,16 @@
-#include "canvas.h"
+#include "effect.h"
 
-class Solid : public Effect {
+class Solid : public LEDEffect {
   protected:
     CRGB color;
 
-  public:
-    Solid(CRGB color) : color(color), Effect((CRGB*)0, 1,1) { }
-    
-    CRGB at(int x, int y) {
+    CRGB atPixel(int x, int y) {
       return color;
     }
+
+  public:
+    Solid(CRGB color) : color(color), LEDEffect((CRGB*)0, 1,1) { }
+    
   
 };
 
