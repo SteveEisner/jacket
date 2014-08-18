@@ -193,8 +193,10 @@ void loop() {
     lastAnim->loop(now);
   if (animTransition) {
     animTransition = qsub8(animTransition, 3);
-    if (!animTransition)
+    if (!animTransition) {
+      delete lastAnim;
       lastAnim = (Animation *)0;
+    }
   }
 
   // Transition if necessary 
