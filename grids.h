@@ -35,8 +35,6 @@ public:
   }
 
   void rotate(uint8_t rotate) {
-    Serial.print("Angle ");
-    Serial.println(rotate);
     angle=rotate;
     revcosval = 2 * ((int)cos8(256-angle)-128);
     revsinval = 2 * ((int)sin8(256-angle)-128);
