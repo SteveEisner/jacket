@@ -1,4 +1,4 @@
-#include "canvas.h"
+#include "effect.h"
 
 class Descent : public PaletteEffect {
   protected:
