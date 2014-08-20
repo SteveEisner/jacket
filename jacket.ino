@@ -1,5 +1,7 @@
 #include "FastLED.h"
 
+#include "buttons.h"
+
 #include "plasma.cpp"
 #include "stripes.cpp"
 #include "fire.cpp"
@@ -14,8 +16,8 @@
 #define NUM_LEDS    400
 
 // Reasonable for battery-powered jacket - use 300 if powering from only USB cable
-#define MAX_POWER 1000  
-#define BRIGHTNESS  100
+#define MAX_POWER 500  
+#define BRIGHTNESS  150
 
 // Sketches are tuned for this speed.  TODO: consistent framerate for sketches inside Animation class
 #define FRAMES_PER_SECOND 18
@@ -147,6 +149,77 @@ Animation *anim;
 Animation *lastAnim;
 fract8 animTransition;
 
+#define TIME_CYCLE 20000
+#define TIME_PAUSED ((unsigned long)-1)
+unsigned long nextAnimationTime = 0;
+int state = -1; // Start state
+
+void NextAnimation(int pin)
+{
+  state = leaveState(state);
+  Serial.print("next animation state: ");
+  Serial.println(state);
+}
+
+void Pause(int pin)
+{
+  if (nextAnimationTime == TIME_PAUSED) {
+    Serial.println("unpause");
+    nextAnimationTime = millis();
+  } else {
+    Serial.println("pause");
+    nextAnimationTime = TIME_PAUSED;
+  }
+}
+
+
+int leaveState(int i) {
+  i = (i+1) % 10;
+  return enterState( i );
+}
+
+int enterState(int i) {
+  switch (i) {
+    case 0:
+      beginAnimation(new Noise());
+      break;
+    case 1:
+      beginAnimation(new Plasma());
+      break;
+    case 2:
+      beginAnimation(new Fire());
+      break;
+    case 3:
+      beginAnimation(new Descent(true));
+      break;
+    case 4:
+      beginAnimation(new Noise());
+      break;
+    case 5:
+      beginAnimation(new Fire());
+      break;
+    case 6:
+      beginAnimation(new Plasma());
+      break;
+    case 7:
+      beginAnimation(new Descent(true));
+      break;
+    case 8:
+      beginAnimation(new Fire());
+      break;
+    case 9:
+      beginAnimation(new Plasma());
+      break;
+  }
+  return i;
+}
+
+
+
+
+FWB Button;
+
+
 
 void setup() { 
   // sanity check delay - allows reprogramming if accidently blowing power w/leds
@@ -154,14 +227,20 @@ void setup() {
   
   // Teensy needs this?
   pinMode(13, OUTPUT);
-  // set_max_power_indicator_LED( 13);  ﻿
+  // set_max_power_indicator_LED( 13); 
+  
+  Button.Configure(12, PULL_UP);
+  Button.OnClick = NextAnimation;
+  Button.OnLongPress = Pause;
   
   // Set up the LED string and appropriate power config
   FastLED.addLeds<CHIPSET, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalSMD5050 );
   set_max_power_in_volts_and_milliamps( 5, MAX_POWER);
   FastLED.setBrightness( BRIGHTNESS );
-  FastLED.setDither( true );
+  FastLED.setDither( false );
   
+  Serial.println("started");
+
   // Precalc all posiitons
   for (int i = 0; i < NUM_LEDS; i++) {  
     int x,y;
@@ -179,49 +258,31 @@ void setup() {
   }
 }
 
-#define TTIME 20000
+
 
 void loop() {
   unsigned long now = millis();
   unsigned long next = now + (1000 / FRAMES_PER_SECOND);
 
+  Button.CheckBP();
+  if (now >= nextAnimationTime) {
+    NextAnimation(0);
+    nextAnimationTime = now + TIME_CYCLE;
+  }
+
   // Cycle current and previous animations
   // Continue fading between current animations
   if (anim)
     anim->loop(now);
-  if (lastAnim)
+  if (lastAnim) {
     lastAnim->loop(now);
-  if (animTransition) {
     animTransition = qsub8(animTransition, 3);
     if (!animTransition) {
       delete lastAnim;
       lastAnim = (Animation *)0;
     }
   }
-
-  // Transition if necessary 
-  // TODO: this bad code is here as placeholder until I can write something that's button reactive
-  static unsigned long xx = 0;
-  if (xx < 1 && millis() > 0) {
-    xx = 1;
-    beginAnimation(new Stripes());
-  } else if (xx < 2 && millis() > TTIME) {
-    xx = 2;
-    beginAnimation(new Plasma());
-  } else if (xx < 3 && millis() > TTIME*2) {
-    xx = 3;
-    beginAnimation(new Noise());
-  } else if (xx < 4 && millis() > TTIME*3) {
-    xx = 4;
-    beginAnimation(new Descent( true ));
-  } else if (xx < 5 && millis() > TTIME*4) {
-    xx = 5;
-    beginAnimation(new Fire());
-  } else if (xx < 6 && millis() > TTIME*5) {
-    xx = 6;
-    beginAnimation(new Plasma());
-  }
-
+  
   // Map from the virtual matrix to the actual LEDs, blending previous
   for(int i = 0; i < NUM_LEDS; i++) {
    if (anim)
@@ -253,3 +314,5 @@ void beginAnimation(Animation *newAnim) {
   anim = newAnim;
   newAnim->start();
 }
+
+
